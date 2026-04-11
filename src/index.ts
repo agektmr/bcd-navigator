@@ -1,0 +1,1 @@
+import './bcd-app.js';
