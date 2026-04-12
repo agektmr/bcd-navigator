@@ -186,8 +186,10 @@ export class BcdDetail extends LitElement {
       .baseline.newly { border-color: var(--accent-blue); }
       .baseline.limited { border-color: var(--accent-yellow); }
       .baseline-icon {
-        font-size: 18px;
-        line-height: 1;
+        width: 54px;
+        height: 30px;
+        flex-shrink: 0;
+        display: block;
       }
       .baseline-title {
         font-size: 13px;
@@ -271,16 +273,20 @@ export class BcdDetail extends LitElement {
       newly: 'Baseline Newly available',
       limited: 'Limited availability',
     };
-    const icon: Record<BaselineStatus, string> = {
-      widely: '✅',
-      newly: '🆕',
-      limited: '⚠️',
+    const iconSrc: Record<BaselineStatus, string> = {
+      widely: '/baseline/baseline-widely-icon.svg',
+      newly: '/baseline/baseline-newly-icon.svg',
+      limited: '/baseline/baseline-limited-icon.svg',
     };
 
     const inherited = match.matchedKey !== this.selectedPath;
     return html`
       <div class="baseline ${match.status}">
-        <span class="baseline-icon">${icon[match.status]}</span>
+        <img
+          class="baseline-icon"
+          src=${iconSrc[match.status]}
+          alt=${label[match.status]}
+        />
         <div>
           <div class="baseline-title">${label[match.status]} — ${match.name}</div>
           <div class="baseline-meta">
