@@ -317,7 +317,7 @@ export class BcdDetail extends LitElement {
           : nothing}
         ${status.deprecated
           ? html`<span class="badge deprecated">Deprecated</span>`
-          : html`<span class="badge ok">Not Deprecated</span>`}
+          : nothing}
       </div>
 
       <div class="section-label">Browser Support</div>
