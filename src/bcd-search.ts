@@ -182,9 +182,36 @@ export class BcdSearch extends LitElement {
     }
 
     const lower = query.toLowerCase();
-    this._results = this.pathIndex
-      .filter((path) => path.toLowerCase().includes(lower))
-      .slice(0, 50);
+    const scored: Array<{ path: string; score: number }> = [];
+    for (const path of this.pathIndex) {
+      const pathLower = path.toLowerCase();
+      if (!pathLower.includes(lower)) continue;
+
+      // Score by match quality on the leaf (feature name) first.
+      const lastDot = pathLower.lastIndexOf('.');
+      const leaf = lastDot === -1 ? pathLower : pathLower.slice(lastDot + 1);
+      let score: number;
+      if (leaf === lower) {
+        score = 4;
+      } else if (leaf.startsWith(lower)) {
+        score = 3;
+      } else if (leaf.includes(lower)) {
+        score = 2;
+      } else {
+        // Only matches somewhere in an ancestor segment.
+        score = 1;
+      }
+      scored.push({ path, score });
+    }
+
+    scored.sort((a, b) => {
+      if (a.score !== b.score) return b.score - a.score;
+      // Prefer shorter paths (less deeply nested features).
+      if (a.path.length !== b.path.length) return a.path.length - b.path.length;
+      return a.path.localeCompare(b.path);
+    });
+
+    this._results = scored.slice(0, 50).map((r) => r.path);
     this._showDropdown = true;
   }
 
