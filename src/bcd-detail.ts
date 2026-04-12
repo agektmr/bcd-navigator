@@ -5,6 +5,8 @@ import { theme } from './styles.js';
 import type { BcdData, BcdFeatureNode, BcdSupportStatement } from './types.js';
 import { MAJOR_BROWSERS, BROWSER_DISPLAY_NAMES, BROWSER_LOGO_URLS } from './types.js';
 import { getNodeAtPath, getChildKeys, hasCompat } from './bcd-data.js';
+import { loadWebFeatures, getBaselineStatus } from './web-features.js';
+import type { WebFeaturesIndex, BaselineStatus } from './web-features.js';
 import './bcd-breadcrumb.js';
 
 @customElement('bcd-detail')
@@ -170,12 +172,49 @@ export class BcdDetail extends LitElement {
         color: var(--text-secondary);
         margin-bottom: 16px;
       }
+      .baseline {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: var(--radius-md);
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        margin-bottom: 16px;
+      }
+      .baseline.widely { border-color: var(--accent-green); }
+      .baseline.newly { border-color: var(--accent-blue); }
+      .baseline.limited { border-color: var(--accent-yellow); }
+      .baseline-icon {
+        font-size: 18px;
+        line-height: 1;
+      }
+      .baseline-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+      .baseline-meta {
+        font-size: 11px;
+        color: var(--text-secondary);
+      }
+      .baseline-meta code {
+        font-family: var(--font-mono);
+      }
     `,
   ];
 
   @property({ attribute: false }) data: BcdData | null = null;
   @property() selectedPath = '';
   @state() private _copied = false;
+  @state() private _webFeatures: WebFeaturesIndex | null = null;
+
+  connectedCallback() {
+    super.connectedCallback();
+    loadWebFeatures().then((index) => {
+      this._webFeatures = index;
+    });
+  }
 
   render() {
     if (!this.data || !this.selectedPath) {
@@ -200,6 +239,7 @@ export class BcdDetail extends LitElement {
         </button>
       </div>
 
+      ${this._renderBaseline()}
       ${compat ? this._renderCompat(compat) : nothing}
       ${childKeys.length > 0
         ? html`
@@ -221,6 +261,44 @@ export class BcdDetail extends LitElement {
     `;
   }
 
+  private _renderBaseline() {
+    if (!this._webFeatures || !this.selectedPath) return nothing;
+    const match = getBaselineStatus(this._webFeatures, this.selectedPath);
+    if (!match) return nothing;
+
+    const label: Record<BaselineStatus, string> = {
+      widely: 'Baseline Widely available',
+      newly: 'Baseline Newly available',
+      limited: 'Limited availability',
+    };
+    const icon: Record<BaselineStatus, string> = {
+      widely: '✅',
+      newly: '🆕',
+      limited: '⚠️',
+    };
+
+    const inherited = match.matchedKey !== this.selectedPath;
+    return html`
+      <div class="baseline ${match.status}">
+        <span class="baseline-icon">${icon[match.status]}</span>
+        <div>
+          <div class="baseline-title">${label[match.status]} — ${match.name}</div>
+          <div class="baseline-meta">
+            ${match.low_date
+              ? html`since ${match.low_date}${match.high_date
+                  ? html` · widely since ${match.high_date}`
+                  : nothing}`
+              : nothing}
+            ${inherited
+              ? html`${match.low_date ? ' · ' : ''}inherited from
+                  <code>${match.matchedKey}</code>`
+              : nothing}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   private _renderCompat(compat: NonNullable<BcdFeatureNode['__compat']>) {
     const status = compat.status;
     const support = compat.support;
@@ -239,7 +317,7 @@ export class BcdDetail extends LitElement {
           : nothing}
         ${status.deprecated
           ? html`<span class="badge deprecated">Deprecated</span>`
-          : html`<span class="badge ok">Not Deprecated</span>`}
+          : nothing}
       </div>
 
       <div class="section-label">Browser Support</div>

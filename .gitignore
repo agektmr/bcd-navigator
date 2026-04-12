@@ -140,3 +140,7 @@ vite.config.ts.timestamp-*
 
 # Superpowers brainstorm files
 .superpowers/
+
+# Generated web-features artifacts (rebuilt by `npm run build`)
+/public/bcd-map.json
+/public/feature-statuses.json

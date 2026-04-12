@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "build:web-features": "node scripts/build-web-features-map.mjs",
+    "predev": "node scripts/build-web-features-map.mjs",
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "node scripts/build-web-features-map.mjs && tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -12,6 +14,7 @@
   },
   "devDependencies": {
     "typescript": "^6.0.2",
-    "vite": "^8.0.8"
+    "vite": "^8.0.8",
+    "web-features": "^3.23.0"
   }
 }
