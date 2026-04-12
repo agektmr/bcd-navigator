@@ -43,7 +43,6 @@ export class BcdApp extends LitElement {
       bcd-search {
         flex: 1;
         min-width: 0;
-        overflow: hidden;
       }
       .menu-btn {
         display: none;
