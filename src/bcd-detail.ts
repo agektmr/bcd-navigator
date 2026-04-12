@@ -1,5 +1,6 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { theme } from './styles.js';
 import type { BcdData, BcdFeatureNode, BcdSupportStatement } from './types.js';
 import { MAJOR_BROWSERS, BROWSER_DISPLAY_NAMES, BROWSER_LOGO_URLS } from './types.js';
@@ -226,7 +227,7 @@ export class BcdDetail extends LitElement {
 
     return html`
       ${compat.description
-        ? html`<div class="description">${compat.description}</div>`
+        ? html`<div class="description">${unsafeHTML(compat.description)}</div>`
         : nothing}
 
       <div class="badges">
