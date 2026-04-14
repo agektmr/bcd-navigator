@@ -68,6 +68,17 @@ export class BcdApp extends LitElement {
         overflow-y: auto;
         flex-shrink: 0;
       }
+      .sidebar-header {
+        display: none;
+        align-items: center;
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border-color);
+      }
+      .sidebar-header .title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
 
       /* Detail */
       .detail {
@@ -107,6 +118,13 @@ export class BcdApp extends LitElement {
       @media (max-width: 768px) {
         .menu-btn {
           display: block;
+        }
+        .header .title,
+        .header .version {
+          display: none;
+        }
+        .sidebar-header {
+          display: flex;
         }
         .sidebar {
           position: fixed;
@@ -240,6 +258,9 @@ export class BcdApp extends LitElement {
       <div class="main">
         <div class="overlay ${this._sidebarOpen ? 'open' : ''}" @click=${() => (this._sidebarOpen = false)}></div>
         <div class="sidebar ${this._sidebarOpen ? 'open' : ''}">
+          <div class="sidebar-header">
+            <span class="title">BCD Navigator</span>
+          </div>
           <bcd-tree
             .data=${this._data}
             .selectedPath=${this._selectedPath}
