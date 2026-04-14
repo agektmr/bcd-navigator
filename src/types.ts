@@ -19,8 +19,8 @@ export interface BcdStatus {
 }
 
 export interface BcdCompat {
-  support: Record<string, BcdSupportStatement | BcdSupportStatement[]>;
-  status: BcdStatus;
+  support?: Record<string, BcdSupportStatement | BcdSupportStatement[]>;
+  status?: BcdStatus;
   description?: string;
   mdn_url?: string;
   spec_url?: string | string[];
