@@ -314,27 +314,35 @@ export class BcdDetail extends LitElement {
         ? html`<div class="description">${unsafeHTML(compat.description)}</div>`
         : nothing}
 
-      <div class="badges">
-        ${status.standard_track
-          ? html`<span class="badge standard">Standard Track</span>`
-          : html`<span class="badge experimental">Non-standard</span>`}
-        ${status.experimental
-          ? html`<span class="badge experimental">Experimental</span>`
-          : nothing}
-        ${status.deprecated
-          ? html`<span class="badge deprecated">Deprecated</span>`
-          : nothing}
-      </div>
+      ${status
+        ? html`
+            <div class="badges">
+              ${status.standard_track
+                ? html`<span class="badge standard">Standard Track</span>`
+                : html`<span class="badge experimental">Non-standard</span>`}
+              ${status.experimental
+                ? html`<span class="badge experimental">Experimental</span>`
+                : nothing}
+              ${status.deprecated
+                ? html`<span class="badge deprecated">Deprecated</span>`
+                : nothing}
+            </div>
+          `
+        : nothing}
 
-      <div class="section-label">Browser Support</div>
-      <div class="browser-grid">
-        ${MAJOR_BROWSERS.map((browser) => {
-          const stmt = support[browser];
-          if (!stmt) return nothing;
-          const s: BcdSupportStatement = Array.isArray(stmt) ? stmt[0] : stmt;
-          return this._renderBrowserCard(browser, s);
-        })}
-      </div>
+      ${support
+        ? html`
+            <div class="section-label">Browser Support</div>
+            <div class="browser-grid">
+              ${MAJOR_BROWSERS.map((browser) => {
+                const stmt = support[browser];
+                if (!stmt) return nothing;
+                const s: BcdSupportStatement = Array.isArray(stmt) ? stmt[0] : stmt;
+                return this._renderBrowserCard(browser, s);
+              })}
+            </div>
+          `
+        : nothing}
 
       ${compat.mdn_url || compat.spec_url
         ? html`
